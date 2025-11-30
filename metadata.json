@@ -1,0 +1,7 @@
+{
+  "name": "SysAdmin Voice Assistant",
+  "description": "A real-time voice conversational AI designed for System Administrators, DevOps Engineers, and Cloud Architects. Powered by Gemini 2.5 Live API.",
+  "requestFramePermissions": [
+    "microphone"
+  ]
+}
