@@ -13,66 +13,73 @@ export const Visualizer: React.FC<AudioVisualizerProps> = ({ isConnected, accent
     let animationId: number;
     
     // Configuration
-    const BAR_WIDTH = 4;
-    const GAP = 2;
-    // We expect ~128 bins from the hook
+    const BAR_WIDTH = 6;
+    const GAP = 4;
     
     const draw = () => {
       const width = canvas.width;
       const height = canvas.height;
       
-      // Clear with slight fade for trail effect? No, transparent is better for footer.
       ctx.clearRect(0, 0, width, height);
 
+      // Add Glow Effect
+      ctx.shadowBlur = 15;
+      ctx.shadowColor = accentColor;
+
       if (!isConnected) {
-        // Flatline logic
+        // Subtle breathing line when idle
+        const time = Date.now() / 1000;
+        const opacity = 0.2 + Math.sin(time * 2) * 0.1;
+        
         ctx.beginPath();
         ctx.moveTo(0, height / 2);
         ctx.lineTo(width, height / 2);
-        ctx.strokeStyle = '#333';
-        ctx.lineWidth = 2;
+        ctx.strokeStyle = `rgba(255, 255, 255, ${opacity})`;
+        ctx.lineWidth = 1;
+        ctx.shadowBlur = 5;
+        ctx.shadowColor = '#fff';
         ctx.stroke();
+        
+        animationId = requestAnimationFrame(draw);
         return;
       }
 
-      // Get real data (0-255)
       const data = getAudioData();
       const bufferLength = data.length;
       
-      // Calculate layout
       const totalBarWidth = BAR_WIDTH + GAP;
       const maxBars = Math.floor(width / totalBarWidth);
-      // We usually want to show the lower frequencies (left side of data) as they are most active for voice
-      // Let's visualize the first ~60% of bins spread across the canvas
       const step = Math.floor(bufferLength / maxBars) || 1;
 
-      ctx.fillStyle = accentColor;
-      
-      // Draw mirrored bars from center
       const centerY = height / 2;
 
       for (let i = 0; i < maxBars; i++) {
-        // Grab data index roughly corresponding to the bar
         const dataIndex = Math.floor(i * (bufferLength / maxBars));
-        // Safe check
         const value = data[dataIndex] || 0;
         
-        // Scale value to height (0-255 -> 0 - height/2)
-        // Add a little minimum height so it looks alive
-        const barHeight = Math.max(2, (value / 255) * (height * 0.8)); 
+        // Non-linear scaling for better visuals
+        const percent = value / 255;
+        const barHeight = Math.max(4, Math.pow(percent, 1.5) * (height * 0.8)); 
         
-        const x = i * totalBarWidth;
+        const x = i * totalBarWidth + (width - (maxBars * totalBarWidth)) / 2; // Center the group
         
-        // Top bar (growing up from center)
-        // Opacity based on height for "glow" feel
-        ctx.globalAlpha = 0.4 + (value / 255) * 0.6;
+        // Gradient Color
+        const gradient = ctx.createLinearGradient(0, centerY - barHeight/2, 0, centerY + barHeight/2);
+        gradient.addColorStop(0, accentColor);
+        gradient.addColorStop(0.5, '#ffffff');
+        gradient.addColorStop(1, accentColor);
+
+        ctx.fillStyle = gradient;
+        ctx.globalAlpha = 0.3 + (percent * 0.7);
         
-        // Draw centered bar
-        ctx.fillRect(x, centerY - barHeight / 2, BAR_WIDTH, barHeight);
+        // Rounded caps
+        ctx.beginPath();
+        ctx.roundRect(x, centerY - barHeight / 2, BAR_WIDTH, barHeight, 4);
+        ctx.fill();
       }
       
-      // Restore alpha
       ctx.globalAlpha = 1.0;
+      ctx.shadowBlur = 0; // Reset
 
       animationId = requestAnimationFrame(draw);
     };
@@ -87,9 +94,9 @@ export const Visualizer: React.FC<AudioVisualizerProps> = ({ isConnected, accent
   return (
     <canvas 
       ref={canvasRef} 
-      width={600} 
-      height={100} 
-      className="w-full h-full object-cover opacity-60 mix-blend-screen"
+      width={800} 
+      height={120} 
+      className="w-full h-full object-contain"
     />
   );
 };

@@ -15,18 +15,18 @@ export const CodeBlock: React.FC<Props> = ({ code, language = 'text' }) => {
   };
 
   return (
-    <div className="my-4 rounded-lg overflow-hidden border border-gray-700 bg-[#0d1117]">
+    <div className="my-4 rounded-lg overflow-hidden border border-gray-600 bg-[#0d1117]">
       {/* Header */}
-      <div className="flex items-center justify-between px-4 py-2 bg-[#161b22] border-b border-gray-700">
-        <span className="text-xs font-mono text-gray-400 uppercase">{language}</span>
+      <div className="flex items-center justify-between px-4 py-2 bg-[#161b22] border-b border-gray-600">
+        <span className="text-xs font-mono text-gray-300 uppercase font-bold">{language}</span>
         <button
           onClick={handleCopy}
-          className="flex items-center gap-1.5 text-xs text-gray-400 hover:text-white transition-colors"
+          className="flex items-center gap-1.5 text-xs text-gray-300 hover:text-white transition-colors"
         >
           {copied ? (
             <>
-              <svg className="w-3.5 h-3.5 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
-              <span className="text-green-500">Copied</span>
+              <svg className="w-3.5 h-3.5 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
+              <span className="text-green-400 font-bold">Copied</span>
             </>
           ) : (
             <>
@@ -38,7 +38,7 @@ export const CodeBlock: React.FC<Props> = ({ code, language = 'text' }) => {
       </div>
       {/* Code */}
       <div className="p-4 overflow-x-auto">
-        <pre className="font-mono text-sm text-gray-300 leading-relaxed">
+        <pre className="font-mono text-sm text-gray-50 leading-relaxed">
           <code>{code}</code>
         </pre>
       </div>

@@ -7,6 +7,13 @@ export interface ChatMessage {
   image?: string; // Base64 Data URL
 }
 
+export interface ChatSession {
+  id: string;
+  title: string;
+  timestamp: number;
+  messages: ChatMessage[];
+}
+
 export enum ConnectionState {
   DISCONNECTED = 'DISCONNECTED',
   CONNECTING = 'CONNECTING',
