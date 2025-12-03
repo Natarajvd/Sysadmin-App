@@ -161,6 +161,11 @@ export function useLiveSession({ onSaveTranscript }: UseLiveSessionProps = {}): 
       setConnectionState(ConnectionState.CONNECTING);
       setError(null);
 
+      const apiKey = process.env.API_KEY;
+      if (!apiKey) {
+        throw new Error("API Key not found in environment variables. Connection aborted.");
+      }
+
       // 1. Setup Audio Contexts
       const AudioContext = window.AudioContext || (window as any).webkitAudioContext;
       const inputCtx = new AudioContext(); 
@@ -233,7 +238,7 @@ export function useLiveSession({ onSaveTranscript }: UseLiveSessionProps = {}): 
       outputAnalyserRef.current = outputAnalyser;
 
       // 5. Connect to Gemini Live API
-      const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+      const ai = new GoogleGenAI({ apiKey });
       const model = MODEL_NAME;
       
       const config: any = {
